@@ -1,6 +1,7 @@
 package detectors;
 
 import android.graphics.Bitmap;
+import android.util.Log;
 
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 
@@ -37,17 +38,18 @@ public class OpenCvDetector extends StartStoppable {
 
 	@Override
 	public void loop() {
+		//Log.d("GO TO MO","go");
 		updateObjects();
 	}
 
 	@Override
 	public void begin() {
-
+		vuforia.start();
 	}
 
 	@Override
 	public void end() {
-
+		vuforia.stop();
 	}
 
 	/**
@@ -76,21 +78,21 @@ public class OpenCvDetector extends StartStoppable {
 		skyStones.addAll(Pipeline.skyStones);
 	}
 
-	public List<Foundation> getObjectsFoundations() {
+	public Foundation[] getObjectsFoundations() {
 		if (!activated) throw new IllegalStateException("Not activated");
 
-		return foundations;
+		return foundations.toArray(new Foundation[0]);
 	}
 
-	public List<Stone> getObjectsStones() {
+	public Stone[] getObjectsStones() {
 		if (!activated) throw new IllegalStateException("Not activated");
 
-		return stones;
+		return stones.toArray(new Stone[0]);
 	}
 
-	public List<SkyStone> getObjectsSkyStones() {
+	public SkyStone[] getObjectsSkyStones() {
 		if (!activated) throw new IllegalStateException("Not activated");
 
-		return skyStones;
+		return skyStones.toArray(new SkyStone[0]);
 	}
 }

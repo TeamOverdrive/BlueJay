@@ -71,5 +71,9 @@ public class Stone {
     	return new Stone(shape);
     }
 
+    public String toString(){
+    	return x+" "+y;
+    }
+
 }
 

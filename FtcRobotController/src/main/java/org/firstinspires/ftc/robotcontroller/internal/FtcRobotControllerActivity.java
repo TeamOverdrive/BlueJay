@@ -824,12 +824,12 @@ public class FtcRobotControllerActivity extends Activity {
   }
 
     public void checkAppMemory(){
-	    Log.d("MEMORY","           ");
+	    //Log.d("MEMORY","           ");
       // Get app memory info
        used = Debug.getNativeHeapAllocatedSize();
        total = Debug.getNativeHeapSize();
 
-      Log.d("MEMORY",String.valueOf((used*1.0)/total));
+      //Log.d("MEMORY",String.valueOf((used*1.0)/total));
 
       // Check for & and handle low memory state
        PercentAvailable = 100f * (1f - ((float) used / total ));

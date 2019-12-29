@@ -30,12 +30,19 @@
 package org.firstinspires.ftc.teamcode;
 
 
+import android.util.Log;
+
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
+import org.firstinspires.ftc.robotcore.external.Telemetry;
+import org.opencv.core.Mat;
+
+import detectors.FoundationPipeline.SkyStone;
 import detectors.ImageDetector;
 
 import java.util.Iterator;
+import java.util.List;
 
 import detectors.ImageDetector;
 import detectors.OpenCvDetector;
@@ -67,22 +74,31 @@ public class DuoDou extends LinearOpMode {
         telemetry.addData("Booting Up", " . . .");
         telemetry.update();
 		OpenCvDetector fieldDetector = new OpenCvDetector(this);
-        ImageDetector detector = new ImageDetector(this, false);
-        StoneDetector stone = new StoneDetector(this, false);
+        //ImageDetector detector = new ImageDetector(this, false);
+        //StoneDetector stone = new StoneDetector(this, false);
 
         //stone.start();
         //detector.start();
         fieldDetector.start();
-        //imu.start();
+        //imu.start();tr
 
         while (!isStopRequested()) {
             //detector.printposition(detector.getPosition());
 
             //fieldDetector.print(fieldDetector.getObjectsFoundations());
+	        //Log.d("GO TO MO","go");
 
-            //fieldDetector.printStones(fieldDetector.getObjectsStones());
+            SkyStone[] skyStone = fieldDetector.getObjectsSkyStones();
 
+            telemetry.addData("Skystones Found",skyStone.length);
+            int i = 0;
+            for(SkyStone s : skyStone){
+            	i++;
+	            telemetry.addLine(""+s);
+            }
 
+	        Mat m = new Mat();
+            m = null;
 
             //also, enabling/disabling detection for individual field elements:
             /*
@@ -112,8 +128,8 @@ public class DuoDou extends LinearOpMode {
         }
 
         // Disable Tracking when we are done
-        detector.stop();
-        stone.stop();
+        //detector.stop();
+        //stone.stop();
         fieldDetector.stop();
         //imu.stop();
     }

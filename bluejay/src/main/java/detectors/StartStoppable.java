@@ -1,8 +1,13 @@
 package detectors;
 
 public abstract class StartStoppable {
-	Thread loop = new Thread(this::loop);
 	volatile boolean activated = false;
+
+	Thread loop = new Thread(()->{
+		while (activated){
+			loop();
+		}
+	});
 
 	public final void start() {
 		activated = true;
