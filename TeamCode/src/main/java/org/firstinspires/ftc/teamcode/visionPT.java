@@ -9,9 +9,14 @@ import org.openftc.easyopencv.OpenCvPipeline;
 public class visionPT extends OpenCvPipeline {
 
     public Mat processFrame(Mat input) {
-        Mat output = input;
-        Point point = new Point(100,100);
-        Imgproc.circle(output, point, 10, new Scalar(0,0,255));
-        return output;
+
+        double[] i = input.get(100,100);
+        if (i[1] > 100) {
+            Imgproc.circle(input,new Point(100,100),5, new Scalar(0,255,0));
+        } else {
+            Imgproc.circle(input,new Point(100,100),5, new Scalar(0,0,0));
+
+        }
+        return input;
     }
 }
