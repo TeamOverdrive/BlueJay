@@ -12,16 +12,19 @@ import detectors.FoundationPipeline.Pipeline;
 import detectors.ImageDetector;
 
 @Autonomous(name = "WebCam TEST", group = "vision")
-public class initalizer extends LinearOpMode {
+public class Auto extends LinearOpMode {
+
+    Robot robot = new Robot(this);
 
     @Override
     public void runOpMode() throws InterruptedException {
 
         Vision cam = new Vision(this);
+
         waitForStart();
-        if (cam.findSkystone.skystonePos == 1) {
-            telemetry.addLine("YEET");
-            telemetry.update();
-        }
+
+        robot.drive.brake();
+        robot.getDrive().setUnit(robot.getDrive().INCHES);
+        
     }
 }
