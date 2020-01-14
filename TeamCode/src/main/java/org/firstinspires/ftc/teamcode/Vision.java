@@ -58,51 +58,38 @@ class pipeline extends OpenCvPipeline {
         this.linearOpMode = linearOpMode;
     }
     public Mat processFrame(Mat input) {
-        Imgproc.medianBlur(input, input, 55);
+        Imgproc.medianBlur(input, input, 15);
         Imgproc.rectangle(input, new Point(40,140), new Point(100,100), new Scalar(255,0,0),3);
         Imgproc.rectangle(input, new Point(130,140), new Point(190,100), new Scalar(255,0,0),3);
         Imgproc.rectangle(input, new Point(220,140), new Point(280,100), new Scalar(255,0,0),3);
 
-        double[] Pos1 = averageColor(input,75,125);
-        double[] Pos2 = averageColor(input,165,125);
-        double[] Pos3 = averageColor(input,255,125);
+        double[] Pos1a = input.get(125,75);
+        double[] Pos2a = input.get(125,165);
+        double[] Pos3a = input.get(125,255);
+        double[] Pos1b = input.get(120,70);
+        double[] Pos2b = input.get(120,160);
+        double[] Pos3b = input.get(120,250);
+        double[] Pos1c = input.get(115,65);
+        double[] Pos2c = input.get(115,155);
+        double[] Pos3c = input.get(115,245);
+        double[] Pos1d = input.get(125,70);
+        double[] Pos2d = input.get(125,160);
+        double[] Pos3d = input.get(125,250);
         try {
-            if (Pos1[0] < 100) {
+            if ((Pos1a[0] + Pos1b[0] + Pos1c[0] + Pos1d[0])/4 < 100) {
                 Imgproc.rectangle(input, new Point(40, 140), new Point(100, 100), new Scalar(0, 255, 0), 3);
                 skystonePos = 1;
-            } else if (Pos2[0] < 100 && Pos2 != null) {
+            } else if ((Pos2a[0] + Pos2b[0]+ Pos2c[0] + Pos2d[0])/4 < 100) {
                 Imgproc.rectangle(input, new Point(130, 140), new Point(190, 100), new Scalar(0, 255, 0), 3);
                 skystonePos = 2;
-            } else if (Pos3[0] < 100 && Pos3 != null) {
+            } else if ((Pos3a[0] + Pos3b[0]+ Pos3c[0] + Pos3d[0])/4 < 100) {
                 Imgproc.rectangle(input, new Point(220, 140), new Point(280, 100), new Scalar(0, 255, 0), 3);
                 skystonePos = 3;
             }
         } catch (Exception e) {
 
         }
-
-        linearOpMode.telemetry.addData("Pos1[0]: ", Pos1[0]);
-        linearOpMode.telemetry.addData("Pos1[1]: ", Pos1[1]);
-        linearOpMode.telemetry.addData("Pos1[2]: ", Pos1[2]);
-        linearOpMode.telemetry.update();
-
-
         return input;
-    }
-    public double[] averageColor(Mat img, int x, int y) {
-        double[] returnVal = new double[2];
-        for (int i = 0; i < 5; i++) {
-            for (int k = 0; k < 5; k++) {
-                double[] pixel = img.get(i + y,k + x);
-                for (int n = 0; n < pixel.length; n++) {
-                    returnVal[n] += pixel[n];
-                }
-            }
-        }
-        for (int i = 0; i < returnVal.length; i++) {
-            returnVal[i] = returnVal[i]/25;
-        }
-        return returnVal;
     }
 
 }
