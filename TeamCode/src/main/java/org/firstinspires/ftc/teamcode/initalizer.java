@@ -11,13 +11,17 @@ import org.openftc.easyopencv.OpenCvCameraRotation;
 import detectors.FoundationPipeline.Pipeline;
 import detectors.ImageDetector;
 
-@Autonomous(name = "WebCam Example Circle", group = "vision")
+@Autonomous(name = "WebCam TEST", group = "vision")
 public class initalizer extends LinearOpMode {
 
     @Override
     public void runOpMode() throws InterruptedException {
 
-        skystoneCam cam = new skystoneCam(this);
+        Vision cam = new Vision(this);
         waitForStart();
+        if (cam.findSkystone.skystonePos == 1) {
+            telemetry.addLine("YEET");
+            telemetry.update();
+        }
     }
 }

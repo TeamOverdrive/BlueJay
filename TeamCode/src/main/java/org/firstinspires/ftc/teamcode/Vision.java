@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode;
 
+import com.disnodeteam.dogecv.math.Line;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
@@ -18,6 +19,8 @@ public class Vision extends Robot{
 
     int cameraMonitorViewId;
 
+    pipeline findSkystone;
+
     int skystonePos;
 
     public Vision(LinearOpMode linearOpMode) {
@@ -30,7 +33,11 @@ public class Vision extends Robot{
 
         webcam.openCameraDevice();
 
-        webcam.setPipeline(new pipeline());
+        findSkystone = new pipeline(linearOpMode);
+
+        webcam.setPipeline(findSkystone);
+
+        linearOpMode.sleep(1000);
 
         webcam.startStreaming(320, 240, OpenCvCameraRotation.UPRIGHT);
 
@@ -39,54 +46,64 @@ public class Vision extends Robot{
 
         webcam.openCameraDevice();
 
-        webcam.setPipeline(new pipeline());
+        webcam.setPipeline(new pipeline(linearOpMode));
 
         webcam.startStreaming(320, 240, OpenCvCameraRotation.UPRIGHT);
 
     }
 class pipeline extends OpenCvPipeline {
     int skystonePos = 0;
+    LinearOpMode linearOpMode;
+    public pipeline(LinearOpMode linearOpMode) {
+        this.linearOpMode = linearOpMode;
+    }
     public Mat processFrame(Mat input) {
-        findSkystone(input, skystonePos);
+        Imgproc.medianBlur(input, input, 55);
+        Imgproc.rectangle(input, new Point(40,140), new Point(100,100), new Scalar(255,0,0),3);
+        Imgproc.rectangle(input, new Point(130,140), new Point(190,100), new Scalar(255,0,0),3);
+        Imgproc.rectangle(input, new Point(220,140), new Point(280,100), new Scalar(255,0,0),3);
+
+        double[] Pos1 = averageColor(input,75,125);
+        double[] Pos2 = averageColor(input,165,125);
+        double[] Pos3 = averageColor(input,255,125);
+        try {
+            if (Pos1[0] < 100) {
+                Imgproc.rectangle(input, new Point(40, 140), new Point(100, 100), new Scalar(0, 255, 0), 3);
+                skystonePos = 1;
+            } else if (Pos2[0] < 100 && Pos2 != null) {
+                Imgproc.rectangle(input, new Point(130, 140), new Point(190, 100), new Scalar(0, 255, 0), 3);
+                skystonePos = 2;
+            } else if (Pos3[0] < 100 && Pos3 != null) {
+                Imgproc.rectangle(input, new Point(220, 140), new Point(280, 100), new Scalar(0, 255, 0), 3);
+                skystonePos = 3;
+            }
+        } catch (Exception e) {
+
+        }
+
+        linearOpMode.telemetry.addData("Pos1[0]: ", Pos1[0]);
+        linearOpMode.telemetry.addData("Pos1[1]: ", Pos1[1]);
+        linearOpMode.telemetry.addData("Pos1[2]: ", Pos1[2]);
+        linearOpMode.telemetry.update();
+
+
         return input;
     }
-    public int leastYellow(PointData[] points) {
-        // DO NOT input less than 3 points
-        if (points[0].dist(255,100,0) >= points[1].dist(255,100,0 ) &&
-                points[0].dist(255,100,0) >= points[2].dist(255,100,0 )) {
-            return 0;
+    public double[] averageColor(Mat img, int x, int y) {
+        double[] returnVal = new double[2];
+        for (int i = 0; i < 5; i++) {
+            for (int k = 0; k < 5; k++) {
+                double[] pixel = img.get(i + y,k + x);
+                for (int n = 0; n < pixel.length; n++) {
+                    returnVal[n] += pixel[n];
+                }
+            }
         }
-        else if (points[1].dist(255,100,0) >= points[2].dist(255,100,0 ) &&
-                points[1].dist(255,100,0) >= points[0].dist(255,100,0 )) {
-            return 1;
-        } else {
-            return 2;
+        for (int i = 0; i < returnVal.length; i++) {
+            returnVal[i] = returnVal[i]/25;
         }
+        return returnVal;
     }
-    public Mat findSkystone(Mat img, int skystonePos) {
-        PointData[] points = new PointData[3];
-        points[0] = new PointData(img.get(50,75));
-        points[1] = new PointData(img.get(150,75));
-        points[2]  = new PointData(img.get(250,75));
-        skystonePos = leastYellow(points);
-        if (skystonePos == 0) {
-            Imgproc.circle(img,new Point(50,75),5, new Scalar(0,255,0));
-            Imgproc.circle(img,new Point(150,75),5, new Scalar(0,0,0));
-            Imgproc.circle(img,new Point(250,75),5, new Scalar(0,0,0));
-
-        } else if (skystonePos == 1) {
-            Imgproc.circle(img,new Point(50,75),5, new Scalar(0, 0,0));
-            Imgproc.circle(img,new Point(150,75),5, new Scalar(0,255,0));
-            Imgproc.circle(img,new Point(250,75),5, new Scalar(0,0,0));
-
-        } else {
-            Imgproc.circle(img,new Point(50,75),5, new Scalar(0, 0,0));
-            Imgproc.circle(img,new Point(150,75),5, new Scalar(0,0,0));
-            Imgproc.circle(img,new Point(250,75),5, new Scalar(0,255,0));
-        }
-        return img;
-    }
-
 
 }
 }

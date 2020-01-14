@@ -42,6 +42,7 @@ public class skystoneCam {
 }
 class Pipeline extends OpenCvPipeline {
 
+
     public Pipeline() {
 
     }
