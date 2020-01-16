@@ -16,30 +16,55 @@ public class Robot {
 
     public Vision vision = null;
 
+    public Lift lift = null;
+
     public Robot(LinearOpMode linearOpMode) {
         init(linearOpMode);
     }
+
+    BNO055IMU.Parameters IMUparameters = new BNO055IMU.Parameters();
+
     public Robot() {}
+
 
     public void init(LinearOpMode linearOpMode) {
 
         this.linearOpMode = linearOpMode;
-        BNO055IMU.Parameters IMUparameters = new BNO055IMU.Parameters();
-        IMUparameters.angleUnit = BNO055IMU.AngleUnit.DEGREES;
-        IMUparameters.accelUnit = BNO055IMU.AccelUnit.METERS_PERSEC_PERSEC;
-        IMUparameters.calibrationDataFile = "BNO055IMUCalibration.json";
-        IMUparameters.loggingEnabled = true;
-        IMUparameters.loggingTag = "IMU";
-
-        imu = linearOpMode.hardwareMap.get(BNO055IMU.class, "imu");
-        imu.initialize(IMUparameters);
+        initIMU();
         drive = new driveTrain(linearOpMode,imu);
         drive.initDrive();
-        vision = new Vision(linearOpMode);
+        // vision = new Vision(linearOpMode);
+        lift = new Lift(linearOpMode);
+        // lift.init();
         // vision.init();
 
     }
     public driveTrain getDrive() {
         return drive;
+    }
+    public void teleop(){
+        linearOpMode.telemetry.update();
+        double relativeAngle;
+        relativeAngle = (Math.atan2(-linearOpMode.gamepad1.left_stick_y, linearOpMode.gamepad1.left_stick_x) - Math.PI / 4) - Math.toRadians(angles.firstAngle);
+        if (Math.abs(relativeAngle) > Math.PI) {
+            if (relativeAngle > 0)
+                relativeAngle = -(Math.PI * 2 - Math.abs(relativeAngle));
+            else if (relativeAngle > 0)
+                relativeAngle = Math.PI * 2 - Math.abs(relativeAngle);
+        }
+        linearOpMode.telemetry.update();
+        drive.setPower(relativeAngle, Math.sqrt(linearOpMode.gamepad1.left_stick_x * linearOpMode.gamepad1.left_stick_x +  linearOpMode.gamepad1.left_stick_y * linearOpMode.gamepad1.left_stick_y),
+                linearOpMode.gamepad1.right_stick_x);
+        linearOpMode.telemetry.update();
+    }
+    public void initIMU() {
+
+        imu = linearOpMode.hardwareMap.get(BNO055IMU.class, "imu");
+        IMUparameters.angleUnit = BNO055IMU.AngleUnit.DEGREES;
+        IMUparameters.accelUnit = BNO055IMU.AccelUnit.METERS_PERSEC_PERSEC;
+        IMUparameters.calibrationDataFile = "BNO055IMUCalibration.json";
+        IMUparameters.loggingEnabled = true;
+        IMUparameters.loggingTag = "IMU";
+        imu.initialize(IMUparameters);
     }
 }
